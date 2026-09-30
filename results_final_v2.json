@@ -1,0 +1,197 @@
+{
+  "version": "v2",
+  "results": [
+    {
+      "category": "simple",
+      "question": "How many customers are from Brazil?",
+      "generated_sql": "SELECT COUNT(*) AS customer_count FROM customers WHERE country = 'Brazil'",
+      "seconds": 72.9,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "simple",
+      "question": "How many shipped orders are there?",
+      "generated_sql": "SELECT COUNT(*) AS shipped_order_count FROM orders WHERE status = 'shipped'",
+      "seconds": 5.5,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "simple",
+      "question": "What is the price of the Coffee Maker?",
+      "generated_sql": "SELECT price FROM products WHERE product_name = 'Coffee Maker'",
+      "seconds": 5.3,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "simple",
+      "question": "List the product names in the Books category that cost less than 20 dollars.",
+      "generated_sql": "SELECT product_name FROM products WHERE category = 'Books' AND price < 20",
+      "seconds": 7.4,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "aggregation",
+      "question": "What is the average price of Home products?",
+      "generated_sql": "SELECT AVG(price) AS avg_price FROM products WHERE category = 'Home'",
+      "seconds": 5.8,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "aggregation",
+      "question": "How many customers have placed more than 4 orders?",
+      "generated_sql": "SELECT COUNT(*) AS customer_count FROM customers WHERE customer_id IN (SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(order_id) > 4)",
+      "seconds": 10.4,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "aggregation",
+      "question": "What is the highest product price in each category?",
+      "generated_sql": "SELECT category, MAX(price) AS max_price FROM products GROUP BY category",
+      "seconds": 5.8,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "aggregation",
+      "question": "How many orders contain more than 2 line items?",
+      "generated_sql": "SELECT COUNT(*) AS order_count FROM order_items WHERE order_id IN (SELECT order_id FROM order_items GROUP BY order_id HAVING COUNT(order_item_id) > 2)",
+      "seconds": 11.3,
+      "match_type": null,
+      "status": "wrong_result"
+    },
+    {
+      "category": "join",
+      "question": "How many orders were placed by customers from Australia?",
+      "generated_sql": "SELECT COUNT(*) AS order_count FROM orders JOIN customers ON orders.customer_id = customers.customer_id WHERE customers.country = 'Australia'",
+      "seconds": 8.2,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "join",
+      "question": "How many units of Desk Lamp have been sold?",
+      "generated_sql": "SELECT SUM(quantity) AS total_units_sold FROM order_items WHERE product_id = (SELECT product_id FROM products WHERE product_name = 'Desk Lamp')",
+      "seconds": 9.3,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "join",
+      "question": "What is the revenue from Sports products?",
+      "generated_sql": "SELECT SUM(order_items.quantity * order_items.unit_price) AS revenue FROM order_items JOIN products ON order_items.product_id = products.product_id WHERE products.category = 'Sports'",
+      "seconds": 11.3,
+      "match_type": null,
+      "status": "wrong_result"
+    },
+    {
+      "category": "join",
+      "question": "What is the average order value for shipped orders?",
+      "generated_sql": "SELECT AVG(total_order_value) AS avg_order_value FROM ( SELECT SUM(order_items.quantity * order_items.unit_price) AS total_order_value FROM orders JOIN order_items ON orders.order_id = order_items.order_id WHERE orders.status = 'shipped' ) subquery",
+      "seconds": 15.7,
+      "match_type": null,
+      "status": "wrong_result"
+    },
+    {
+      "category": "join",
+      "question": "How many orders did customers from the USA place in 2024?",
+      "generated_sql": "SELECT COUNT(*) AS order_count FROM orders JOIN customers ON orders.customer_id = customers.customer_id WHERE customers.country = 'USA' AND EXTRACT(YEAR FROM orders.order_date) = 2024",
+      "seconds": 13.6,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "join",
+      "question": "What is the total quantity sold for each product category?",
+      "generated_sql": "SELECT p.category, SUM(oi.quantity) AS total_quantity_sold FROM order_items oi JOIN products p ON oi.product_id = p.product_id GROUP BY p.category",
+      "seconds": 12.9,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "date",
+      "question": "How many orders were placed in December 2024?",
+      "generated_sql": "SELECT COUNT(*) AS order_count FROM orders WHERE EXTRACT(YEAR FROM order_date) = 2024 AND EXTRACT(MONTH FROM order_date) = 12;",
+      "seconds": 12.9,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "date",
+      "question": "How many customers signed up in the first half of 2023?",
+      "generated_sql": "SELECT COUNT(*) AS customer_count FROM customers WHERE EXTRACT(YEAR FROM signup_date) = 2023 AND EXTRACT(MONTH FROM signup_date) BETWEEN 1 AND 6",
+      "seconds": 12.9,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "date",
+      "question": "What was the revenue in 2025?",
+      "generated_sql": "SELECT SUM(order_items.quantity * order_items.unit_price) AS total_revenue FROM orders JOIN order_items ON orders.order_id = order_items.order_id WHERE EXTRACT(YEAR FROM orders.order_date) = 2025 AND orders.status = 'completed'",
+      "seconds": 15.9,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "date",
+      "question": "How many orders were placed on or after 2025-01-01?",
+      "generated_sql": "SELECT COUNT(*) AS order_count FROM orders WHERE order_date >= '2025-01-01'",
+      "seconds": 9.6,
+      "match_type": "exact",
+      "status": "correct"
+    },
+    {
+      "category": "unanswerable",
+      "question": "What is the average delivery time of an order?",
+      "generated_sql": "CANNOT_ANSWER",
+      "seconds": 3.1,
+      "match_type": null,
+      "status": "correct_refusal"
+    },
+    {
+      "category": "unanswerable",
+      "question": "How many employees work at the company?",
+      "generated_sql": "CANNOT_ANSWER",
+      "seconds": 2.9,
+      "match_type": null,
+      "status": "correct_refusal"
+    },
+    {
+      "category": "unanswerable",
+      "question": "Which customers are subscribed to the newsletter?",
+      "generated_sql": "CANNOT_ANSWER",
+      "seconds": 2.9,
+      "match_type": null,
+      "status": "correct_refusal"
+    },
+    {
+      "category": "unanswerable",
+      "question": "What is the average weight of a product?",
+      "generated_sql": "CANNOT_ANSWER",
+      "seconds": 2.9,
+      "match_type": null,
+      "status": "correct_refusal"
+    },
+    {
+      "category": "unanswerable",
+      "question": "What payment method did customer 5 use?",
+      "generated_sql": "CANNOT_ANSWER",
+      "seconds": 2.8,
+      "match_type": null,
+      "status": "correct_refusal"
+    },
+    {
+      "category": "unanswerable",
+      "question": "Which warehouse ships the most orders?",
+      "generated_sql": "CANNOT_ANSWER",
+      "seconds": 2.7,
+      "match_type": null,
+      "status": "correct_refusal"
+    }
+  ]
+}
